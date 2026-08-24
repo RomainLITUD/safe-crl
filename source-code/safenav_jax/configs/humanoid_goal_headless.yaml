@@ -1,0 +1,44 @@
+env_id: humanoid_goal_headless
+params:
+  backend: mjx
+  n_frames: 10
+  humanoid_use_spring_gear: false
+  episode_length: 1000
+  reset_noise_scale: 0.0
+  min_goal_dist: 2.0  # Evaluation/direct-env default; training overrides to 0.0.
+  max_goal_dist: 7.0
+  goal_radius: 0.55
+  healthy_z_range: [1.0, 2.0]
+  playground_size: 6.0
+  agent_wall_margin: 1.0
+  goal_wall_margin: 0.75
+  num_hazards: 12
+  num_gremlins: 3
+  hazard_radius: 0.34
+  gremlin_radius: 0.3
+  gremlin_height: 1.25
+  gremlin_travel: 1.0
+  gremlin_speed: 0.1
+  layout_margin: 0.0
+  agent_keepout: 1.0
+  goal_keepout: 1.0
+  hazard_keepout: 0.75
+  gremlin_keepout: 0.75
+  relocate_objects_on_reset: true
+  fixed_object_layout_seed: 0
+  different_object_layout_per_env: false
+  goal_respawn_on_success: true
+  respawn_goal_require_path_objects: false
+  respawn_goal_min_path_objects: 1
+  respawn_goal_path_band_scale: 1.0
+  terminate_on_cost: false
+  cost_limit_max: 25.0
+  robot_cost_margin: 0.15
+  object_boundary: true
+  fixed_agent_on_reset: false
+  fixed_goal_on_reset: false
+  uniform_initial_goal_sampling: true
+  first_valid_layout_candidate: true
+  include_object_layout_obs: true
+  layout_lidar_num_bins: 16
+  full_robot_observation: true

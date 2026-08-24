@@ -1,0 +1,26 @@
+env_id: ant_goal_grid_headless
+params:
+  backend: mjx
+  n_frames: 10
+  episode_length: 1000
+  reset_noise_scale: 0.1
+  grid_cell_size: 4.0
+  grid_layout_name: default
+  eval_grid_layout_name: default_eval
+  min_goal_cell_distance: 0.0
+  goal_radius: 0.5
+  healthy_z_range: [0.2, 1.0]
+  hazard_height: 1.0
+  hazard_radius: 1.0
+  relocate_objects_on_reset: true
+  fixed_object_layout_seed: 0
+  different_object_layout_per_env: false
+  goal_respawn_on_success: true
+  terminate_on_cost: false
+  cost_limit_max: 25.0
+  robot_cost_margin: 0.10
+  object_boundary: true
+  fixed_goal_on_reset: false
+  fixed_agent_on_reset: false
+  full_robot_observation: true
+  layout_lidar_num_bins: 16

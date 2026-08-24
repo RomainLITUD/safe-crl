@@ -1,0 +1,27 @@
+env_id: humanoid_goal_grid_headless
+params:
+  backend: mjx
+  n_frames: 10
+  humanoid_use_spring_gear: false
+  episode_length: 1000
+  reset_noise_scale: 0.0
+  grid_cell_size: 2.0
+  grid_layout_name: default
+  eval_grid_layout_name: default_eval
+  min_goal_cell_distance: 2.0
+  goal_radius: 0.5
+  healthy_z_range: [1.0, 2.0]
+  hazard_height: 2.0
+  hazard_radius: 0.5
+  relocate_objects_on_reset: true
+  fixed_object_layout_seed: 0
+  different_object_layout_per_env: false
+  goal_respawn_on_success: true
+  terminate_on_cost: false
+  cost_limit_max: 25.0
+  robot_cost_margin: 0.05
+  object_boundary: true
+  fixed_goal_on_reset: false
+  fixed_agent_on_reset: false
+  full_robot_observation: true
+  layout_lidar_num_bins: 16

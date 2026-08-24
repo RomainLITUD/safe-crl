@@ -1,0 +1,4 @@
+interface:
+  display_name: "Give Command"
+  short_description: "Generate verified experiment and eval commands"
+  default_prompt: "Use $give-command to generate the correct command for my requested experiment or evaluation analysis."

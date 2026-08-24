@@ -1,0 +1,15 @@
+env_id: crl_ant_maze
+params:
+  backend: mjx
+  n_frames: 10
+  reset_noise_scale: 0.1
+  goal_radius: 0.5
+  healthy_z_range: [0.2, 1.0]
+  terminate_when_unhealthy: true
+  ctrl_cost_weight: 0.5
+  healthy_reward: 1.0
+  exclude_current_positions_from_observation: false
+  maze_layout_name: u_maze
+  maze_size_scaling: 4.0
+  layout_lidar_num_bins: 16
+  layout_lidar_max_dist: 12.0

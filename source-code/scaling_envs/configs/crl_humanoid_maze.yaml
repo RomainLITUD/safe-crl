@@ -1,0 +1,17 @@
+env_id: crl_humanoid_maze
+params:
+  backend: mjx
+  n_frames: 10
+  humanoid_use_spring_gear: false
+  reset_noise_scale: 0.0
+  goal_radius: 0.5
+  healthy_z_range: [1.0, 2.0]
+  terminate_when_unhealthy: true
+  forward_reward_weight: 1.25
+  ctrl_cost_weight: 0.1
+  healthy_reward: 5.0
+  exclude_current_positions_from_observation: false
+  maze_layout_name: u_maze
+  maze_size_scaling: 2.0
+  layout_lidar_num_bins: 16
+  layout_lidar_max_dist: 6.0

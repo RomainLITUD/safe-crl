@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <title>Brax visualizer</title>
+    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico">
+  
+<style>
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 720px;
+  height: 720px;
+  overflow: hidden;
+  background: #ffffff;
+}
+body > div:first-child {
+  width: 720px !important;
+  height: 720px !important;
+}
+canvas {
+  width: 720px !important;
+  height: 720px !important;
+  display: block;
+}
+</style>
+</head>
+
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+    }
+
+    #brax-viewer {
+      height: 720;
+      width: 100vw;
+      overflow: hidden;
+    }
+  </style>
+  <script async src="https://unpkg.com/es-module-shims@1.6.3/dist/es-module-shims.js"></script>
+
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://unpkg.com/three@0.150.1/build/three.module.js",
+        "three/addons/": "https://unpkg.com/three@0.150.1/examples/jsm/",
+        "lilgui": "https://cdn.jsdelivr.net/npm/lil-gui@0.18.0/+esm",
+        "viewer": "https://cdn.jsdelivr.net/gh/google/brax@v0.14.1/brax/visualizer/js/viewer.js"
+      }
+    }
+  </script>
+
+  <script src="https://unpkg.com/pako@2.1.0/dist/pako.min.js"></script>
+
+  <script type="application/javascript">
+  var system = "eJzlWs1uIzcMfpXA5zgQKZKS9tg+wC6wvS2CwMXOJkYdj2HPNmmDvHspaRzP2ONmDDhIhPXB9lB/5Cd+FDXS06ReNZNPF0+TZn5fbZpqpQ/myhjgy4vJcnZf6fPk86qZ18vJs4oW8+VfN1G+0YJvk6Zeb+pJlD/M5psm/ltVi7/nm/hvPb+9a26aO/3ZPW7u5svUoPrRKUtP26Jc8edqVa1vZuv7nWhRP+xEqUmvUpL06jSz9W3VTK47tnz9R61MhbdVfb9Jtj/U68X3aM/TS7Uvi9mymmwNnn9/VOEUonl1slwxurzYfsX+13XE8Rt05bvC2z9nuRVFmbXxG+XyAnL5Zv5vlVqb1Kr9MVeAfK2o79T6rX4cqRSfoJSE9PHeuGAcpOZJT5M+AAFNQB8GFE7qbkc8VVUsR1UqR1UpR1VfjqpQEK+gIGJBGczCckIrlhMEsJwggAU5K5XjrFSOs1JBHiDleICUkwlKQYmAFJQISEHM8uUwy5cTW31BHgCmHBeAgjavUNI+C0ravEBBuxcoaE8AJW0KoKBdQda1jOQl61qSD5SREmRdCwkEVNLSRQVtDeD9d92xKJ9zfeqeEP0+W21+LvbPiMxl//VmT7esuLlyqo8RJ8F4CtakM6EhmTadHthFWX/DQQwJZZuyUWABrEHwSYicEdBaFlk8HRiqfbu2NwzeoEVMww4K+7P2dXVXrUcaDz4r4gTYA+EJk3heY0PuzLITdF5CZ9Seca9ObZwVE1qrnJBH9ribMfWtXGTBqfOF8FFnv63jhb0PTBmQQWGmQXvKO4IHI45Ki0aiPeUegQT23aZ1jcCMQRiEPj42g7Q5EiOSHp1z/xEA2UNXMbQN3h4JMECmVTsmOO/BBks9wGL1AMFKpBy2CgE5jfRAQRwJv6czReWdZV1yQKzxcoBXuv0wAi4aYlZEh3smkH+3MEs53nunjbSDhPqBdmPXlGPm2tZFyNjAlk/JDM68gnKPB10+55i5u+gyYnZ5z9zp2dgwPUqHj8WG3VWgEXDJr0WGY+YWQ4b9q10jptj1bHatMyGAFyOS/XqctEcQHzcG1mtKqkSRaGLEEdmw46BgKNWE5Jj0jWG0bZIA2p81+boYWM9CRpQ0XhdiPkB1d/NtBKq+h+rgCj9K2MOUOCivPWM0DTHhpNWCUtyIBh3CQAnRQ+FbA9pm65o2WTGM/wPoqyTsQQc+q+mAkdlZlzc8Y4TvRtIh7zpYsU7iaHiFo+eiaLEM3buaOmYDZV5h6PRMFB2kY+kc7aM3wMdp8Sxt7zb3XGkYi3NcWz6nadwz5TmWNbOmynexH7NFrb752lU+ZrlqEem8RlK9Q+vumvdoUmvxpTbk6uo/gbxn+1JdVEWOeaeof7+cMoSYuoC1DESGdrWDi18p/pj0qnDvZVZqq5msQUHSFJ2Zw7Yxoc4iMlh0HC/Uqyz7uIhg1C82ZosGmAU1glFgODay6nkA7fihtXVWHAgk6JTxsbFb+HyeXWU+sKVoJ8TgkbrwwTrxNtduGSPi2KFJ9YS7UwIJNsyh3imjg3OGX4bC7U5G+R1sILbjh8Irm4YCsoZ1X+P42FD53XxrG/J1x/eHnT/vobSX4KL5xjnpvD1oX+OwToY6iwW33wzUeOswMNtus+STXvUCTxQh/2XaDYP8JtI4t9uI+Md6ttz8qHXN1Ujz/B9UdaGq";
+  // decode base64 (convert ascii to binary)
+  system = atob(system);
+  // convert binary string to character-number array
+  system = system.split('').map(function(x){return x.charCodeAt(0);});
+  // decompress
+  system = pako.inflate(system);
+  // convert gunzipped byteArray back to ascii string
+  system = new TextDecoder("utf-8").decode(system);
+  // and load json
+  system = JSON.parse(system);
+  </script>
+
+  <body>
+
+    <div id="brax-viewer"></div>
+
+    <script type="module">
+      import {Viewer} from 'viewer';
+      const domElement = document.getElementById("brax-viewer");
+      var viewer = new Viewer(domElement, system);
+    </script>
+
+  </body>
+
+</html>

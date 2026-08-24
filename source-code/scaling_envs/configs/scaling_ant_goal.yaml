@@ -1,0 +1,13 @@
+env_id: scaling_ant_goal
+params:
+  backend: mjx
+  n_frames: 10
+  episode_length: 1000
+  reset_noise_scale: 0.1
+  playground_size: 10.0
+  min_goal_dist: 2.0
+  max_goal_dist: 10.0
+  eval_min_goal_dist: 2.0
+  eval_max_goal_dist: 10.0
+  goal_radius: 0.9
+  healthy_z_range: [0.2, 1.0]

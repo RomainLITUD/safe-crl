@@ -1,0 +1,35 @@
+# Python caches and tooling
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Environments and local configuration
+.venv/
+venv/
+env/
+.env
+.env.*
+
+# Experiment outputs and external logging
+results/
+runs/
+wandb/
+checkpoints/
+final_policy/
+*.ckpt
+*.pkl
+*.log
+
+# Notebook and editor artifacts
+.ipynb_checkpoints/
+.idea/
+.vscode/
+*.swp
+
+# Operating-system artifacts
+.DS_Store
+Thumbs.db

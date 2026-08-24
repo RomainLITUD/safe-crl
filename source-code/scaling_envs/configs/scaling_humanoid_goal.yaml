@@ -1,0 +1,15 @@
+env_id: scaling_humanoid_goal
+params:
+  backend: mjx
+  n_frames: 10
+  humanoid_use_spring_gear: false
+  episode_length: 1000
+  reset_noise_scale: 0.0
+  playground_size: 6.0
+  min_goal_dist: 1.0
+  max_goal_dist: 5.0
+  eval_min_goal_dist: 1.0
+  eval_max_goal_dist: 5.0
+  goal_radius: 0.55
+  healthy_z_range: [1.0, 2.0]
+  full_robot_observation: true

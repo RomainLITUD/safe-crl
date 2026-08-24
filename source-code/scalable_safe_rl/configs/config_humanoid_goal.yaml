@@ -1,0 +1,191 @@
+# SafeCRL main benchmark: Humanoid Goal.
+# Override any field from the CLI, for example:
+#   python -m scalable_safe_rl.train --config scalable_safe_rl/config.yaml --seed 1
+
+# ---------------------------------------------------------------------------
+# Run Identity And Output
+# ---------------------------------------------------------------------------
+exp_name: safe-crl
+seed: 1000
+# GPU device ids for this process, e.g. "0" or "0,1".
+# Empty preserves the shell's CUDA_VISIBLE_DEVICES / all visible devices.
+gpu_device: ""
+deterministic_runtime: true
+dry_run: false
+
+# Logging defaults avoid optional wandb/render dependencies.
+track: false
+wandb_project_name: scalable_safe_rl
+wandb_entity: ""
+wandb_mode: offline
+wandb_dir: .
+wandb_group: "."
+results_root: runs
+run_name: ""
+# Exact per-seed directory used by launchers; empty uses results_root/run_name.
+seed_output_dir: ""
+print_every_epochs: 1
+print_args: false
+
+# Saving / artifacts.
+checkpoint: true
+checkpoint_every_epochs: 10
+save_final_policy: true
+save_buffer: 0
+capture_vis: false
+vis_length: 1000
+num_render: 1
+
+# ---------------------------------------------------------------------------
+# Environment Selection
+# ---------------------------------------------------------------------------
+# env_id options include:
+#   point_goal(_headless), car_goal(_headless),
+#   ant_goal(_headless), humanoid_goal(_headless), ant_goal_grid(_headless),
+#   humanoid_goal_grid(_headless),
+env_id: humanoid_goal_headless
+eval_env_id: humanoid_goal_headless
+episode_length: 1000
+use_env_config: true
+env_config_dir: ""   # empty means safenav_jax/configs/
+env_config_path: ""  # optional concrete env config path
+
+# ---------------------------------------------------------------------------
+# Environment Layout, Reset, And Observation
+# ---------------------------------------------------------------------------
+# Object layout reset modes:
+#   relocate_objects_on_reset=true: resample object positions on reset.
+#   different_object_layout_per_env=true: fixed reset layouts can differ by env seed.
+relocate_objects_on_reset: false
+fixed_object_layout_seed: 0
+# If true, fixed_object_layout_seed is overwritten by --seed after parsing.
+layout_seed_from_seed: false
+different_object_layout_per_env: false
+
+fixed_agent_on_reset: false
+fixed_goal_on_reset: false
+goal_respawn_on_success: false
+
+# Optional respawn-only goal difficulty filter. When enabled, respawned goals
+# must have at least this many hazards/obstacles/gremlin-orbits near the
+# agent-goal segment; if no candidate qualifies, normal respawn is used.
+respawn_goal_require_path_objects: true
+respawn_goal_min_path_objects: 1
+respawn_goal_path_band_scale: 1.0
+
+# Observation/layout overrides. Use "true", "false", or "" to keep env config defaults.
+include_object_layout_obs: "true"
+include_object_type_obs: "true"
+include_box_layout_obs: "true"
+# Pseudo-lidar bins for object layout and optional point/car goal-lidar.
+layout_lidar_num_bins: 16
+# Goal-grid pitfall layout selectors. Empty strings keep the environment config defaults.
+grid_layout_name: ""
+eval_grid_layout_name: ""
+# Point/car goal: use ego-view lidar/goals. If false, lidar, state positions,
+# and goals stay in the global frame.
+ego_view: false
+parking_mode: false
+parking_yaw_tolerance_degrees: 20.0
+# MJX Humanoid ablation: replace XML actuator gears with Brax Spring gears.
+humanoid_use_spring_gear: false
+# Point/car goal only: represent policy/G-encoder goals as ego-view lidar instead of 2D ego XY.
+goal_lidar: false
+# Point Push only: use [cube XY, robot XY] future goals and
+# [task goal XY, current cube XY] collection/evaluation goals. When false,
+# use future cube XY and task goal XY only.
+point_push_combined_goal: false
+# Drop lidar/layout from actor and anchor network inputs while keeping env obs unchanged.
+ignore_layout_obs: false
+
+# ---------------------------------------------------------------------------
+# Environment Safety And Termination
+# ---------------------------------------------------------------------------
+# terminate_on_cost ends training episodes when cumulative episode cost reaches cost_limit_max.
+# eval_terminate_on_cost applies the same rule to evaluation and saved-policy visualization.
+terminate_on_cost: false
+eval_terminate_on_cost: false
+cost_limit_max: 20.0
+
+# Enlarges root-position unsafe-region checks; 0.0 uses object/wall radius only.
+robot_cost_margin: 0.0
+# If true, entering the raw unsafe region terminates immediately; margin entry still triggers cost.
+object_boundary: true
+
+# ---------------------------------------------------------------------------
+# Evaluation
+# ---------------------------------------------------------------------------
+num_eval_envs: 128
+eval_every_epochs: 1
+# eval_actor:
+#   0 deterministic mean action
+#   1 stochastic sampled action
+#   K>=2 sample K actions and choose the one with highest critic score
+eval_actor: 0
+
+# ---------------------------------------------------------------------------
+# Training Throughput And Replay
+# ---------------------------------------------------------------------------
+total_env_steps: 100_000_000
+num_epochs: 100
+num_envs: 512
+unroll_length: 62
+batch_size: 512
+max_replay_size: 10000
+min_replay_size: 1000
+num_sgd_batches_per_training_step: 800
+
+# Usually keep these unchanged.
+num_episodes_per_env: 1
+training_steps_multiplier: 1
+use_all_batches: 0
+
+# ---------------------------------------------------------------------------
+# Critic Loss
+# ---------------------------------------------------------------------------
+# critic_loss_type options:
+#   scaling_crl
+#   scaling_crl_survive
+critic_loss_type: scaling_crl_survive
+
+gamma: 0.99
+logsumexp_penalty_coeff: 0.1
+
+# ---------------------------------------------------------------------------
+# Optimization
+# ---------------------------------------------------------------------------
+actor_lr: 0.0003
+critic_lr: 0.0003
+alpha_lr: 0.0003
+max_grad_norm: 0.0
+skip_nonfinite_updates: true
+actor_mean_clip: 0.0
+# entropy_mode options:
+#   learned: SAC-style automatic alpha; entropy_param controls target entropy scale
+#   fixed: use fixed_alpha directly and skip alpha updates
+#   none: no entropy term in actor loss
+entropy_mode: learned
+entropy_param: 0.5
+fixed_alpha: 0.05
+disable_entropy: 0
+
+# Exploration actor:
+#   0 deterministic action
+#   1 stochastic sampled action
+#   K>=2 sample K actions and choose the one with highest critic score
+expl_actor: 1
+
+# ---------------------------------------------------------------------------
+# Networks
+# ---------------------------------------------------------------------------
+actor_network_width: 256
+critic_network_width: 256
+# Shared output embedding dimension for SA_encoder and G_encoder.
+embedding_dim: 64
+actor_depth: 64
+critic_depth: 64
+z_encoder_depth: 4  # -1 inherits critic_depth
+# 0 uses swish, 1 uses ReLU.
+use_relu: 0
+
+# Network input contract: state/action and goal use separate Scaling-CRL towers.
