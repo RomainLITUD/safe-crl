@@ -20,6 +20,12 @@ Both modes use the same concatenated residual MLP actor and two-tower
 negative-L2 contrastive critic. Safe-CRL is the default in the supplied paper
 configurations.
 
+## Learned-policy examples
+
+We provide [interactive Brax HTML rollouts](htmls/) showing representative
+policies learned across the benchmark environments. Download an HTML file and
+open it in a web browser to inspect the rollout interactively.
+
 ## Environment configuration
 
 The experiments use the following core environment:
