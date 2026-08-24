@@ -10,12 +10,12 @@ the critic's InfoNCE rows as described below.
 Rollouts store observations, actions, episode identity, task goals, achieved
 goals, and any ego-frame projection metadata needed by the environment.
 `scaling_crl_survive` additionally records truncation flags. Its replay
-flattener derives an observed future length `L_t` for every anchor. The length
-ends at the first stored failure or administrative truncation boundary, or at
-the sampled-window boundary when no earlier boundary is available. It then
-stores the realized discounted survival mass
-`survival_mass = 1 - gamma ** L_t`. A boundary can therefore produce
-`L_t = 0` and zero mass. Goal respawning does not end this survival horizon.
+flattener inspects the first stored episode boundary after every anchor. If
+that boundary is an unsafe termination at future length `L_t`, it stores
+`survival_mass = 1 - gamma ** L_t`. If the first boundary is a safe time-limit
+truncation, or the sampled window ends without a boundary, it stores mass
+`1.0` because no unsafe termination was observed. An anchor directly on any
+stored boundary receives zero mass. Goal respawning does not end this horizon.
 
 For every anchor except the final sampled transition, replay selects one later
 achieved goal from the same episode and unchanged task-goal segment. Candidate

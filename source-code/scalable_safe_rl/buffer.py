@@ -445,8 +445,11 @@ class TrajectoryUniformSamplingQueue():
 
     @staticmethod
     def _observed_survival_mass(gamma, transition):
-        """Returns the discounted mass of each anchor's observed future support."""
+        """Returns each anchor's mass from the first observed episode boundary."""
         discount = jnp.asarray(transition.discount)
+        truncation = jnp.asarray(
+            transition.extras["state_extras"]["truncation"]
+        ).astype(bool)
         seq_len = discount.shape[0]
         anchor_indices = jnp.arange(seq_len - 1, dtype=jnp.int32)
 
@@ -459,18 +462,25 @@ class TrajectoryUniformSamplingQueue():
             reverse=True,
         )[:-1]
 
-        window_future_length = seq_len - 1 - anchor_indices
         boundary_future_length = jnp.maximum(next_boundary - anchor_indices, 0)
-        observed_future_length = jnp.where(
-            next_boundary < seq_len,
-            jnp.minimum(boundary_future_length, window_future_length),
-            window_future_length,
-        )
-
+        boundary_observed = next_boundary < seq_len
+        clipped_boundary = jnp.minimum(next_boundary, seq_len - 1)
+        boundary_is_truncation = truncation[clipped_boundary]
+        boundary_at_anchor = boundary_observed & (next_boundary == anchor_indices)
+        unsafe_boundary_ahead = boundary_observed & ~boundary_is_truncation
         gamma = jnp.asarray(gamma, dtype=jnp.float32)
-        survival_mass = 1.0 - jnp.power(
+        unsafe_survival_mass = 1.0 - jnp.power(
             gamma,
-            observed_future_length.astype(gamma.dtype),
+            boundary_future_length.astype(gamma.dtype),
+        )
+        survival_mass = jnp.where(
+            boundary_at_anchor,
+            jnp.zeros_like(unsafe_survival_mass),
+            jnp.where(
+                unsafe_boundary_ahead,
+                unsafe_survival_mass,
+                jnp.ones_like(unsafe_survival_mass),
+            ),
         )
         return survival_mass
 

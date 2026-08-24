@@ -16,10 +16,10 @@
 
 ## Important Caveats
 
-- Safe-CRL weights each complete InfoNCE row by `1 - gamma ** L_t` and divides
-  by the valid-anchor count. Never self-normalize by the sum of these weights.
-- Failure and administrative truncation both end the finite observed support
-  used to compute `L_t`; truncation is still not classified as failure.
+- Safe-CRL weights a row by `1 - gamma ** L_t` only when its first observed
+  boundary is unsafe. Safe truncation or no observed boundary gives mass `1.0`;
+  an anchor directly on any stored boundary gives mass zero. The reduction
+  divides by valid-anchor count, never by the sum of these weights.
 - Preserve the B x B negative-L2 objective and actor-before-critic update order.
 - Survival labels distinguish true termination from truncation and mask
   horizons extending beyond observable data.
