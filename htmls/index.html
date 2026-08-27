@@ -1,0 +1,321 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Interactive Brax rollouts from learned Safe-CRL policies.">
+    <title>Safe-CRL Learned-Policy Rollouts</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --background: #f4f6f8;
+        --panel: #ffffff;
+        --text: #17202a;
+        --muted: #5f6b76;
+        --border: #d8dee4;
+        --accent: #0072b2;
+        --accent-soft: #e8f3f9;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-width: 320px;
+        background: var(--background);
+        color: var(--text);
+        font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+          "Segoe UI", sans-serif;
+      }
+
+      header {
+        padding: 22px clamp(18px, 4vw, 48px) 18px;
+        border-bottom: 1px solid var(--border);
+        background: var(--panel);
+      }
+
+      h1 {
+        margin: 0 0 5px;
+        font-size: clamp(1.35rem, 2.8vw, 2rem);
+        line-height: 1.2;
+      }
+
+      header p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 0.95rem;
+      }
+
+      main {
+        display: grid;
+        grid-template-columns: minmax(210px, 270px) minmax(0, 1fr);
+        gap: 18px;
+        width: min(1180px, 100%);
+        margin: 0 auto;
+        padding: 18px;
+      }
+
+      nav,
+      .viewer-panel {
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        background: var(--panel);
+      }
+
+      nav {
+        align-self: start;
+        padding: 14px;
+      }
+
+      .group + .group {
+        margin-top: 16px;
+      }
+
+      .group h2 {
+        margin: 0 0 7px;
+        color: var(--muted);
+        font-size: 0.72rem;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      .rollout-button {
+        display: block;
+        width: 100%;
+        margin: 2px 0;
+        padding: 7px 9px;
+        border: 0;
+        border-radius: 5px;
+        background: transparent;
+        color: var(--text);
+        font: inherit;
+        font-size: 0.84rem;
+        line-height: 1.25;
+        text-align: left;
+        cursor: pointer;
+      }
+
+      .rollout-button:hover {
+        background: #f1f3f5;
+      }
+
+      .rollout-button[aria-current="true"] {
+        background: var(--accent-soft);
+        color: #005f91;
+        font-weight: 650;
+      }
+
+      .rollout-button:focus-visible,
+      .open-link:focus-visible {
+        outline: 3px solid rgba(0, 114, 178, 0.3);
+        outline-offset: 1px;
+      }
+
+      .viewer-panel {
+        min-width: 0;
+        padding: 14px;
+      }
+
+      .viewer-heading {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 12px;
+      }
+
+      .viewer-heading h2 {
+        margin: 0;
+        font-size: 1rem;
+      }
+
+      .open-link {
+        flex: none;
+        color: var(--accent);
+        font-size: 0.82rem;
+        font-weight: 600;
+        text-decoration: none;
+      }
+
+      .open-link:hover {
+        text-decoration: underline;
+      }
+
+      .viewer-stage {
+        width: min(720px, 100%);
+        margin: 0 auto;
+        overflow: hidden;
+        background: #ffffff;
+      }
+
+      .viewer-scaler {
+        width: 720px;
+        height: 720px;
+        transform-origin: top left;
+      }
+
+      iframe {
+        display: block;
+        width: 720px;
+        height: 720px;
+        border: 0;
+        background: #ffffff;
+      }
+
+      .hint {
+        margin: 10px 0 0;
+        color: var(--muted);
+        font-size: 0.78rem;
+        text-align: center;
+      }
+
+      @media (max-width: 760px) {
+        main {
+          grid-template-columns: 1fr;
+          padding: 12px;
+        }
+
+        nav {
+          display: grid;
+          grid-template-columns: repeat(3, minmax(0, 1fr));
+          gap: 14px;
+        }
+
+        .group + .group {
+          margin-top: 0;
+        }
+      }
+
+      @media (max-width: 520px) {
+        nav {
+          grid-template-columns: 1fr;
+        }
+
+        .viewer-heading {
+          align-items: flex-start;
+          flex-direction: column;
+          gap: 4px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>Safe-CRL learned-policy rollouts</h1>
+      <p>Select an environment to inspect its deterministic Brax rollout.</p>
+    </header>
+
+    <main>
+      <nav aria-label="Rollout selection">
+        <section class="group">
+          <h2>Goal</h2>
+          <button class="rollout-button" data-rollout="point_goal_respawn">Point Goal</button>
+          <button class="rollout-button" data-rollout="car_goal_respawn">Car Goal</button>
+          <button class="rollout-button" data-rollout="ant_goal">Ant Goal</button>
+          <button class="rollout-button" data-rollout="humanoid_goal_back">Humanoid Goal — Back</button>
+          <button class="rollout-button" data-rollout="humanoid_goal_left">Humanoid Goal — Left</button>
+          <button class="rollout-button" data-rollout="humanoid_goal_right">Humanoid Goal — Right</button>
+        </section>
+
+        <section class="group">
+          <h2>Maze</h2>
+          <button class="rollout-button" data-rollout="ant_H_maze">Ant H-Maze</button>
+          <button class="rollout-button" data-rollout="ant_cross_maze">Ant Cross Maze</button>
+          <button class="rollout-button" data-rollout="ant_big_maze">Ant Big Maze</button>
+          <button class="rollout-button" data-rollout="humanoid_u_maze">Humanoid U-Maze</button>
+        </section>
+
+        <section class="group">
+          <h2>Pitfall</h2>
+          <button class="rollout-button" data-rollout="ant_big_pitfall_left">Ant Big Pitfall — Left</button>
+          <button class="rollout-button" data-rollout="ant_big_pitfall_top">Ant Big Pitfall — Top</button>
+          <button class="rollout-button" data-rollout="ant_hardest_maze_1">Ant Hardest Pitfall — 1</button>
+          <button class="rollout-button" data-rollout="ant_hardest_maze_2">Ant Hardest Pitfall — 2</button>
+          <button class="rollout-button" data-rollout="humanoid_loop_pitfall1">Humanoid Loop Pitfall — 1</button>
+          <button class="rollout-button" data-rollout="humanoid_lopp_pitfall2">Humanoid Loop Pitfall — 2</button>
+          <button class="rollout-button" data-rollout="humanoid_big_pitfall">Humanoid Big Pitfall</button>
+        </section>
+      </nav>
+
+      <section class="viewer-panel" aria-labelledby="rollout-title">
+        <div class="viewer-heading">
+          <h2 id="rollout-title">Point Goal</h2>
+          <a id="open-link" class="open-link" href="point_goal_respawn.html" target="_blank" rel="noopener">
+            Open separately
+          </a>
+        </div>
+        <div id="viewer-stage" class="viewer-stage">
+          <div id="viewer-scaler" class="viewer-scaler">
+            <iframe
+              id="rollout-frame"
+              title="Point Goal interactive Brax rollout"
+              src="point_goal_respawn.html"
+              loading="eager"
+              allowfullscreen>
+            </iframe>
+          </div>
+        </div>
+        <p class="hint">Drag to rotate the camera; use the viewer controls to inspect playback.</p>
+      </section>
+    </main>
+
+    <script>
+      const buttons = [...document.querySelectorAll("[data-rollout]")];
+      const rollouts = new Map(
+        buttons.map((button) => [
+          button.dataset.rollout,
+          {label: button.textContent.trim(), button},
+        ]),
+      );
+      const defaultRollout = "point_goal_respawn";
+      const frame = document.getElementById("rollout-frame");
+      const title = document.getElementById("rollout-title");
+      const openLink = document.getElementById("open-link");
+      const stage = document.getElementById("viewer-stage");
+      const scaler = document.getElementById("viewer-scaler");
+
+      function selectRollout(requested, updateHistory = true) {
+        const key = rollouts.has(requested) ? requested : defaultRollout;
+        const rollout = rollouts.get(key);
+        const file = `${key}.html`;
+
+        buttons.forEach((button) => {
+          button.setAttribute("aria-current", String(button === rollout.button));
+        });
+        title.textContent = rollout.label;
+        frame.title = `${rollout.label} interactive Brax rollout`;
+        if (frame.getAttribute("src") !== file) {
+          frame.setAttribute("src", file);
+        }
+        openLink.setAttribute("href", file);
+
+        if (updateHistory) {
+          const url = new URL(window.location.href);
+          url.searchParams.set("rollout", key);
+          window.history.pushState({rollout: key}, "", url);
+        }
+      }
+
+      function resizeViewer() {
+        const scale = Math.min(1, stage.clientWidth / 720);
+        scaler.style.transform = `scale(${scale})`;
+        stage.style.height = `${720 * scale}px`;
+      }
+
+      buttons.forEach((button) => {
+        button.addEventListener("click", () => selectRollout(button.dataset.rollout));
+      });
+      window.addEventListener("popstate", () => {
+        selectRollout(new URL(window.location.href).searchParams.get("rollout"), false);
+      });
+      new ResizeObserver(resizeViewer).observe(stage);
+
+      const initial = new URL(window.location.href).searchParams.get("rollout");
+      selectRollout(initial, false);
+      resizeViewer();
+    </script>
+  </body>
+</html>
