@@ -91,3 +91,9 @@ ENV_ID=humanoid_goal_headless \
 CONFIG=scalable_safe_rl/configs/config_humanoid_goal.yaml \
 ./run_seeds_dynamic.sh
 ```
+
+## Remarks on JAX reproducibility
+
+Our main benchmark experiments are conducted on modified RTX 4080 (32GB) and modified RTX 4090 (48GB) using the AutoDL platform's vGPU with CUDA 13.0: [here](https://www.autodl.com/market/list). Use this one for bitwise reproduction of the results.
+
+Note that JAX does not guarantee bitwise-identical numerical results across accelerator platforms, even for a fixed JAX version ([see documentation](https://docs.jax.dev/en/latest/api_compatibility.html)). Therefore, fixing random seeds and enabling deterministic GPU operations does not, in general, guarantee identical training trajectories across different GPU architectures. We tested RTX 5090 (32GB) and RTX 6000D (84GB); they have slightly different results from the ones reported in the paper.
