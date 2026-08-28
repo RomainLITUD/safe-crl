@@ -4,6 +4,9 @@ Official JAX/Brax implementation of **Safe-CRL**, a survival-aware extension of
 Scaling-CRL for goal-conditioned reinforcement learning with one-bit failure
 signals.
 
+**Paper:** [arXiv:2608.26571](https://arxiv.org/abs/2608.26571)<br>
+**Authors:** Guopeng Li, Yiyang Duan, Yiru Jiao, and Chengcheng Xu
+
 Safe-CRL preserves the scalable contrastive goal-reaching objective while
 adding two survival corrections: replay-observed survival-mass weighting for
 critic InfoNCE and a learned goal-independent survival model used by the actor.
